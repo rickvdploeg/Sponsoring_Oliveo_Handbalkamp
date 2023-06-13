@@ -5,7 +5,6 @@ import pandas as pd
 import time
 import datetime
 from PIL import Image
-import os
 
 
 # Define URL's in the scope
@@ -159,6 +158,5 @@ with st.expander("__Sponsor geld__"):
 
 col1,col2,col3 = st.columns(3)
 with col2:
-    st.write(str(os.getcwd()))
-    image = Image.open('Logo Oliveo Handbal.PNG')
+    image = Image.open('./Logo Oliveo Handbal.PNG')
     st.image(image)
