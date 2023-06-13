@@ -47,16 +47,14 @@ boodschappenlijst_dict = pd.Series(boodschappenlijst_df.Aantal.values, index=boo
 boodschappenlijst_dict["Anders, namelijk..."] = 99
 
 # Define session_state to store the selected option and max value
-# Ugly solution, but for now only option to let the user add multiple items 
-# (one at the time) and the correct amount for eacht selected product
-if 'dis_1' not in st.session_state:
-    st.session_state.dis_1 = False
 if 'product' not in st.session_state:
     st.session_state.product = dict()
 if 'aantal' not in st.session_state:
     st.session_state.aantal = dict()
 if "num_filters" not in st.session_state:
     st.session_state["num_filters"] = 1
+if "max_value_1" not in st.session_state:
+    st.session_state["max_value_1"] = 1
 
 
 def initialiseer_aantal():
@@ -67,11 +65,25 @@ def initialiseer_aantal():
 
 def update_aantal():
     nr = st.session_state.num_filters
-    for i in range(nr + 1):
-        st.session_state['max_value_{}'.format(nr)] = boodschappenlijst_dict[st.session_state['product_{}'.format(nr)]]
+    for i in range(1, nr + 1):
+        if st.session_state['product_{}'.format(i)] == ' ':
+            continue
+        st.session_state['max_value_{}'.format(i)] = boodschappenlijst_dict[st.session_state['product_{}'.format(i)]]
 
 
 # Bouw de app
+# Less padding top of page
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 3rem;
+                    padding-bottom: 0rem;
+                    padding-left: 5rem;
+                    padding-right: 5rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
+
 st.title("Handbalkamp sponsoring")
 if boodschappenlijst_df.empty:
      st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
@@ -89,12 +101,12 @@ else:
             index = len(st.session_state.product) if num > len(st.session_state.product) else num - 1
 
             with col1:
-                st.session_state.product[num] = st.selectbox('Kies een product uit de lijst:', list(boodschappenlijst_dict.keys()), key='product_{}'.format(num), index=index, on_change=update_aantal)
+                st.session_state.product[num] = st.selectbox('Kies een product uit de lijst:', [" "] + list(boodschappenlijst_dict.keys()), key='product_{}'.format(num), index=index, on_change=update_aantal)
 
             initialiseer_aantal()
 
             with col2:
-                st.session_state.aantal[num] = st.number_input("Kies het aantal:", min_value=1, max_value=int(st.session_state['max_value_{}'.format(num)]), key='aantal_{}'.format(num))
+                st.session_state.aantal[num] = st.number_input("Kies het aantal:", min_value=1, max_value=int(st.session_state['max_value_{}'.format(num)]), key='aantal_{}'.format(num), disabled = True if st.session_state.product[num] == " " else False)
 
             # Create text input for user entry
             if st.session_state.product[num] == "Anders, namelijk...":
@@ -103,37 +115,48 @@ else:
         col1,col2 = st.columns([0.7, 0.3])
 
         with col1:
-            if st.button("Sponsor nog een product", type='primary'):
-                st.session_state["num_filters"] += 1
-                st.experimental_rerun()
+            print(list(st.session_state.product.values()))
+            if "" not in list(st.session_state.product.values()):
+                if st.button("Sponsor nog een product", type='primary'):
+                    st.session_state["num_filters"] += 1
+                    st.experimental_rerun()
 
         opmerking = st.text_input("Eventuele opmerkingen:", max_chars=300)
 
         # Define the submit button
         if st.button("Verstuur", type='primary'):
-                # Check if all required fields are filled in
-                if naam_sponsor == '':
-                    st.error('Er moet een naam ingevuld zijn.')
-                elif len(naam_sponsor) < 5 or " " not in naam_sponsor:
-                    st.error("Er moet een geldige voor- en achternaam ingevuld worden.")
-                elif email_sponsor == '':
-                    st.error('Er moet een emailadres ingevuld zijn.')
-                elif '@' not in email_sponsor or '.' not in email_sponsor:
-                    st.error("Er moet een geldig emailadres ingevuld worden.")
-                elif len(st.session_state.product.values()) != len(set(st.session_state.product.values())):
-                    st.error("Een product komt meerdere keren voor in de lijst. Zorg dat ieder product maar 1x in de lijst voorkomt.")
-                else:
-                    time.sleep(1)
-                    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    for item in range(1, len(st.session_state.product)+1):
-                        values = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
-                        gesponsord_ruw.append_row(values)
-                    st.session_state["num_filters"] = 1
-                    placeholder.empty()  
-                    st.success("Opgeslagen. Bedankt voor uw sponsoring!")
+            st.session_state.product = {key:val for key, val in st.session_state.product.items() if val not in ["", " "]}
+            # Check if all required fields are filled in
+            if naam_sponsor == '':
+                st.error('Er moet een naam ingevuld zijn.')
+            elif len(naam_sponsor) < 5 or " " not in naam_sponsor:
+                st.error("Er moet een geldige voor- en achternaam ingevuld worden.")
+            elif email_sponsor == '':
+                st.error('Er moet een emailadres ingevuld zijn.')
+            elif '@' not in email_sponsor or '.' not in email_sponsor:
+                st.error("Er moet een geldig emailadres ingevuld worden.")
+            elif len(st.session_state.product) == 0:
+                st.error("Er moet minstens 1 product opgegeven zijn in het formulier.")
+            elif len(st.session_state.product.values()) != len(set(st.session_state.product.values())):
+                st.error("Een product komt meerdere keren voor in de lijst. Zorg dat ieder product maar 1x in de lijst voorkomt.")
+            else:
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                for item in range(1, len(st.session_state.product)+1):
+                    values = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
+                    gesponsord_ruw.append_row(values)
+                st.session_state["num_filters"] = 1
+                placeholder.success("Opgeslagen. Bedankt voor uw sponsoring!")
+            #st.balloons()
 
 
-    with st.expander("Sponsor geld"):
-             st.markdown("Scan de QR-code en volg de stappen, of volg deze [link](https://bunq.me/OHK).")
-             image = Image.open('QR code sponsoring kamp.PNG')
-             st.image(image)
+with st.expander("__Sponsor geld__"):
+    st.markdown("Scan de QR-code en volg de stappen, of volg deze [link](https://bunq.me/OHK).")
+    col1,col2,col3 = st.columns([0.1, 0.8, 0.1])
+    with col2:
+        image = Image.open('QR code sponsoring kamp.PNG')
+        st.image(image)
+
+col1,col2,col3 = st.columns(3)
+with col2:
+    image = Image.open('Logo Oliveo Handbal.PNG')
+    st.image(image)
