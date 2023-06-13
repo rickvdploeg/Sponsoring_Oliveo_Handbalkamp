@@ -5,6 +5,7 @@ import pandas as pd
 import time
 import datetime
 from PIL import Image
+import os
 
 
 # Define URL's in the scope
@@ -76,7 +77,7 @@ def update_aantal():
 st.markdown("""
         <style>
                .block-container {
-                    padding-top: 3rem;
+                    padding-top: 1rem;
                     padding-bottom: 0rem;
                     padding-left: 5rem;
                     padding-right: 5rem;
@@ -158,5 +159,6 @@ with st.expander("__Sponsor geld__"):
 
 col1,col2,col3 = st.columns(3)
 with col2:
+    print(os.getcwd())
     image = Image.open('Logo Oliveo Handbal.PNG')
     st.image(image)
