@@ -1,0 +1,6 @@
+[theme]
+backgroundColor="#DBE9FA"
+secondaryBackgroundColor="#ffffff"
+
+[logger]
+showErrorDetails = false
