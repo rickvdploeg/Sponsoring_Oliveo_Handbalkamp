@@ -72,6 +72,8 @@ def update_aantal():
 
 
 # Bouw de app
+st.set_page_config(layout="wide")
+
 # Less padding top of page
 st.markdown("""
         <style>
@@ -83,6 +85,7 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
+
 
 st.title("Handbalkamp sponsoring")
 if boodschappenlijst_df.empty:
