@@ -159,6 +159,6 @@ with st.expander("__Sponsor geld__"):
 
 col1,col2,col3 = st.columns(3)
 with col2:
-    print(os.getcwd())
+    st.write(str(os.getcwd()))
     image = Image.open('Logo Oliveo Handbal.PNG')
     st.image(image)
