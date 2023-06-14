@@ -72,7 +72,6 @@ def update_aantal():
 
 
 # Bouw de app
-#st.set_page_config(layout="wide")
 
 # Less padding top of page
 st.markdown("""
@@ -80,8 +79,8 @@ st.markdown("""
                .block-container {
                     padding-top: 1rem;
                     padding-bottom: 0rem;
-                    padding-left: 0rem;
-                    padding-right: 0rem;
+                    padding-left: 0.2rem;
+                    padding-right: 0.2rem;
                 }
         </style>
         """, unsafe_allow_html=True)
@@ -98,7 +97,7 @@ else:
         #with st.form("formulier"):
         naam_sponsor = st.text_input("*Voor- en achternaam")
         email_sponsor = st.text_input("*Emailadres")
-        
+
         for num in range(1, st.session_state["num_filters"] + 1):
             col1,col2 = st.columns([0.7, 0.3])
             index = len(st.session_state.product) if num > len(st.session_state.product) else num - 1
@@ -114,7 +113,7 @@ else:
             # Create text input for user entry
             if st.session_state.product[num] == "Anders, namelijk...":
                 st.session_state.product[num] = st.text_input("Beschrijf hier het product...", key='other_product_{}'.format(num), max_chars=100)
- 
+
         col1,col2 = st.columns([0.7, 0.3])
 
         with col1:
@@ -159,7 +158,7 @@ with st.expander("__Sponsor geld__"):
         image = Image.open('QR code sponsoring kamp.PNG')
         st.image(image)
 
-#col1,col2,col3 = st.columns(3)
-#with col2:
-#    image = Image.open('./Logo Oliveo Handbal.PNG')
-#    st.image(image)
+col1,col2,col3 = st.columns(3)
+with col2:
+   image = Image.open('./Logo Oliveo Handbal.PNG')
+   st.image(image)
