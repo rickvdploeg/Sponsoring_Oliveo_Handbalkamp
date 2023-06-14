@@ -72,7 +72,7 @@ def update_aantal():
 
 
 # Bouw de app
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 
 # Less padding top of page
 st.markdown("""
@@ -159,7 +159,7 @@ with st.expander("__Sponsor geld__"):
         image = Image.open('QR code sponsoring kamp.PNG')
         st.image(image)
 
-col1,col2,col3 = st.columns(3)
-with col2:
-    image = Image.open('./Logo Oliveo Handbal.PNG')
-    st.image(image)
+#col1,col2,col3 = st.columns(3)
+#with col2:
+#    image = Image.open('./Logo Oliveo Handbal.PNG')
+#    st.image(image)
