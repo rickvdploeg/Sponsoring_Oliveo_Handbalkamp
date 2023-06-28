@@ -5,6 +5,7 @@ import pandas as pd
 import time
 import datetime
 from PIL import Image
+import webbrowser
 
 
 # Define URL's in the scope
@@ -35,6 +36,8 @@ gesponsord_df = pd.DataFrame(gesponsord[1:], columns=gesponsord[0])
 
 # Haal wat al gesponsord is van de boodschappenlijst af
 for item in gesponsord_df["Product"].unique():
+    if item not in boodschappenlijst_df['Product']:
+        continue
     huidig_aantal = int(boodschappenlijst_df.loc[boodschappenlijst_df['Product'] == item, 'Aantal'].iloc[0])
     gesponsord_aantal = gesponsord_df.loc[gesponsord_df['Product'] == item, 'Aantal'].apply(int).sum()
     aantal_nog_over = huidig_aantal - gesponsord_aantal
@@ -152,7 +155,10 @@ else:
 
 
 with st.expander("__Sponsor geld__"):
-    st.markdown("Scan de QR-code en volg de stappen, of volg deze [link](https://bunq.me/OHK).")
+    if st.button("Doneer hier!", type="primary"):
+        webbrowser.open('https://bunq.me/OHK')
+    st.info("NB: De rekening staat op naam van kampleiding Bart (via BUNQ bank)")
+    st.markdown("Of scan de onderstaande QR-code en volg de stappen:")
     col1,col2,col3 = st.columns([0.1, 0.8, 0.1])
     with col2:
         image = Image.open('QR code sponsoring kamp.PNG')
