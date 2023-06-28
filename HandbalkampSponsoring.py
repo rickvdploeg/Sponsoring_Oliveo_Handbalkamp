@@ -5,7 +5,7 @@ import pandas as pd
 import time
 import datetime
 from PIL import Image
-import webbrowser
+from streamlit.components.v1 import html
 
 
 # Define URL's in the scope
@@ -73,6 +73,14 @@ def update_aantal():
             continue
         st.session_state['max_value_{}'.format(i)] = boodschappenlijst_dict[st.session_state['product_{}'.format(i)]]
 
+
+def open_page():
+    open_script= """
+        <script type="text/javascript">
+            window.open('https://bunq.me/OHK', '_blank').focus();
+        </script>
+    """
+    html(open_script)
 
 # Bouw de app
 
@@ -155,8 +163,7 @@ else:
 
 
 with st.expander("__Sponsor geld__"):
-    if st.button("Doneer hier!", type="primary"):
-        webbrowser.open('https://bunq.me/OHK')
+    st.button('Doneer hier!', type='primary', on_click=open_page, args=(''))
     st.info("NB: De rekening staat op naam van kampleiding Bart (via BUNQ bank)")
     st.markdown("Of scan de onderstaande QR-code en volg de stappen:")
     col1,col2,col3 = st.columns([0.1, 0.8, 0.1])
