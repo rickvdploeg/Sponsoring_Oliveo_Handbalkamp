@@ -119,7 +119,6 @@ else:
         col1,col2 = st.columns([0.7, 0.3])
 
         with col1:
-            print(list(st.session_state.product.values()))
             if "" not in list(st.session_state.product.values()):
                 if st.button("Sponsor nog een product", type='primary'):
                     st.session_state["num_filters"] += 1
@@ -153,14 +152,13 @@ else:
             #st.balloons()
 
 
-with st.expander("__Sponsor geld__"):
-    st.subheader("[Doneer hier!](https://bunq.me/OHK)")
-    st.info("NB: De rekening staat op naam van kampleiding Bart (via BUNQ bank)")
-    st.markdown("Of scan de onderstaande QR-code en volg de stappen:")
-    col1,col2,col3 = st.columns([0.1, 0.8, 0.1])
-    with col2:
-        image = Image.open('QR code sponsoring kamp.PNG')
-        st.image(image)
+with st.expander("__Sponsor geld__"):  
+    st.markdown(f'''
+    <a href='https://bunq.me/OHK'><button style="background-color:#4CAF50;height:150%;width:60%;
+                border-radius: 8px;border: none;font-size: 20px;
+                ">Klik hier om te doneren</button></a>
+    ''', unsafe_allow_html=True)
+    st.markdown(":red[_NB: De rekening staat op naam van kampleiding Bart (via BUNQ bank)._]")
 
 col1,col2,col3 = st.columns(3)
 with col2:
