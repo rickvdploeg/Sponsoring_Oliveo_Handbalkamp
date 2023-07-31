@@ -35,7 +35,7 @@ gesponsord_df = pd.DataFrame(gesponsord[1:], columns=gesponsord[0])
 
 # Haal wat al gesponsord is van de boodschappenlijst af
 for item in gesponsord_df["Product"].unique():
-    if item not in boodschappenlijst_df['Product']:
+    if item not in list(boodschappenlijst_df['Product']):
         continue
     huidig_aantal = int(boodschappenlijst_df.loc[boodschappenlijst_df['Product'] == item, 'Aantal'].iloc[0])
     gesponsord_aantal = gesponsord_df.loc[gesponsord_df['Product'] == item, 'Aantal'].apply(int).sum()
