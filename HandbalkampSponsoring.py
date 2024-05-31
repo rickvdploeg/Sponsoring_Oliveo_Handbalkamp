@@ -57,6 +57,8 @@ if "num_filters" not in st.session_state:
     st.session_state["num_filters"] = 1
 if "max_value_1" not in st.session_state:
     st.session_state["max_value_1"] = 1
+if 'gesponderde_producten' not in st.session_state:
+    st.session_state.gesponderde_producten = pd.DataFrame(columns=['Naam','Email','Product','Aantal','Opmerking'])
 
 
 def initialiseer_aantal():
@@ -73,59 +75,22 @@ def update_aantal():
         st.session_state['max_value_{}'.format(i)] = boodschappenlijst_dict[st.session_state['product_{}'.format(i)]]
 
 
-# Bouw de app
+@st.experimental_dialog("Vul het formulier in")
+def sponsor_item():
+    naam_sponsor = st.text_input("*Voor- en achternaam kind")
+    email_sponsor = st.text_input("*Emailadres ouder")
+    for num in range(1, st.session_state["num_filters"] + 1):
+        st.session_state.product[num] = st.selectbox('Kies een product uit de lijst:', list(boodschappenlijst_dict.keys()), key='product_{}'.format(num), placeholder="Kies een product", index=None, on_change=update_aantal)
+        # Create text input for user entry
+        if st.session_state.product[num] == "Anders, namelijk...":
+            st.session_state.product[num] = st.text_input("Beschrijf hier het product...", key='other_product_{}'.format(num), max_chars=100)
 
-# Less padding top of page
-st.markdown("""
-        <style>
-               .block-container {
-                    padding-top: 1rem;
-                    padding-bottom: 0rem;
-                    padding-left: 0.2rem;
-                    padding-right: 0.2rem;
-                }
-        </style>
-        """, unsafe_allow_html=True)
+        initialiseer_aantal()
 
-
-st.title("Handbalkamp sponsoring")
-if boodschappenlijst_df.empty:
-     st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
-else:
-    placeholder = st.empty()
-    with placeholder.expander("__Sponsor een product__"):
-        st.write("Vul hier in wat u zou willen sponsoren. Er is een lijst aan boodschappen en aantalen die gewenst zijn. \
-                Mocht een product er niet meer tussen staan, of weinig aantallen, dan worden deze al gesponsord.")
-        #with st.form("formulier"):
-        naam_sponsor = st.text_input("*Voor- en achternaam")
-        email_sponsor = st.text_input("*Emailadres")
-
-        for num in range(1, st.session_state["num_filters"] + 1):
-            col1,col2 = st.columns([0.7, 0.3])
-            index = len(st.session_state.product) if num > len(st.session_state.product) else num - 1
-
-            with col1:
-                st.session_state.product[num] = st.selectbox('Kies een product uit de lijst:', [" "] + list(boodschappenlijst_dict.keys()), key='product_{}'.format(num), index=index, on_change=update_aantal)
-
-            initialiseer_aantal()
-
-            with col2:
-                st.session_state.aantal[num] = st.number_input("Kies het aantal:", min_value=1, max_value=int(st.session_state['max_value_{}'.format(num)]), key='aantal_{}'.format(num), disabled = True if st.session_state.product[num] == " " else False)
-
-            # Create text input for user entry
-            if st.session_state.product[num] == "Anders, namelijk...":
-                st.session_state.product[num] = st.text_input("Beschrijf hier het product...", key='other_product_{}'.format(num), max_chars=100)
-
-        col1,col2 = st.columns([0.7, 0.3])
-
-        with col1:
-            if "" not in list(st.session_state.product.values()):
-                if st.button("Sponsor nog een product", type='primary'):
-                    st.session_state["num_filters"] += 1
-                    st.experimental_rerun()
-
+        st.session_state.aantal[num] = st.number_input("Kies het aantal:", min_value=1, max_value=int(st.session_state['max_value_{}'.format(num)]), key='aantal_{}'.format(num), disabled = True if st.session_state.product == "Kies een product" else False)
+        
         opmerking = st.text_input("Eventuele opmerkingen:", max_chars=300)
-
+        
         # Define the submit button
         if st.button("Verstuur", type='primary'):
             st.session_state.product = {key:val for key, val in st.session_state.product.items() if val not in ["", " "]}
@@ -148,9 +113,36 @@ else:
                     values = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
                     gesponsord_ruw.append_row(values)
                 st.session_state["num_filters"] = 1
-                placeholder.success("Opgeslagen. Bedankt voor uw sponsoring!")
-            #st.balloons()
+                st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
+                st.rerun()
 
+# Bouw de app
+
+# Less padding top of page
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                    padding-left: 0.2rem;
+                    padding-right: 0.2rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
+
+
+st.title("Handbalkamp sponsoring")
+if boodschappenlijst_df.empty:
+     st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
+else:
+    with st.expander("__Sponsor een product__"):
+        st.write("Vul hier in wat u zou willen sponsoren. Er is een lijst aan boodschappen en aantalen die gewenst zijn. \
+                Mocht een product er niet meer tussen staan, of weinig aantallen, dan worden deze al gesponsord.")
+        if st.button("Sponsor (nog) een product", type='primary'):
+            sponsor_item()
+        if len(st.session_state.gesponderde_producten) > 0:
+            st.success("Opgeslagen. Bedankt voor uw sponsoring! U kunt de knop hierboven nogmaals gebruiken om nog een ander product te sponsoren.")
+            st.dataframe(st.session_state.gesponderde_producten, hide_index=True)
 
 with st.expander("__Sponsor geld__"):  
     st.markdown(f'''
