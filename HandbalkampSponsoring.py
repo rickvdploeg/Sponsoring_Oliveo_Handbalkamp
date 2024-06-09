@@ -59,6 +59,10 @@ if "max_value_1" not in st.session_state:
     st.session_state["max_value_1"] = 1
 if 'gesponderde_producten' not in st.session_state:
     st.session_state.gesponderde_producten = pd.DataFrame(columns=['Naam','Email','Product','Aantal','Opmerking'])
+if 'naam_sponsor' not in st.session_state:
+    st.session_state["naam_sponsor"] = ''
+if 'email_sponsor' not in st.session_state:
+    st.session_state["email_sponsor"] = ''
 
 
 def initialiseer_aantal():
@@ -77,8 +81,8 @@ def update_aantal():
 
 @st.experimental_dialog("Vul het formulier in")
 def sponsor_item():
-    naam_sponsor = st.text_input("*Voor- en achternaam kind")
-    email_sponsor = st.text_input("*Emailadres ouder")
+    st.session_state.naam_sponsor = st.text_input("*Voor- en achternaam kind", value=st.session_state.naam_sponsor)
+    st.session_state.email_sponsor = st.text_input("*Emailadres ouder", value=st.session_state.email_sponsor)
     for num in range(1, st.session_state["num_filters"] + 1):
         st.session_state.product[num] = st.selectbox('Kies een product uit de lijst:', list(boodschappenlijst_dict.keys()), key='product_{}'.format(num), placeholder="Kies een product", index=None, on_change=update_aantal)
         # Create text input for user entry
@@ -95,13 +99,13 @@ def sponsor_item():
         if st.button("Verstuur", type='primary'):
             st.session_state.product = {key:val for key, val in st.session_state.product.items() if val not in ["", " "]}
             # Check if all required fields are filled in
-            if naam_sponsor == '':
+            if st.session_state.naam_sponsor == '':
                 st.error('Er moet een naam ingevuld zijn.')
-            elif len(naam_sponsor) < 5 or " " not in naam_sponsor:
+            elif len(st.session_state.naam_sponsor) < 5 or " " not in st.session_state.naam_sponsor:
                 st.error("Er moet een geldige voor- en achternaam ingevuld worden.")
-            elif email_sponsor == '':
+            elif st.session_state.email_sponsor == '':
                 st.error('Er moet een emailadres ingevuld zijn.')
-            elif '@' not in email_sponsor or '.' not in email_sponsor:
+            elif '@' not in st.session_state.email_sponsor or '.' not in st.session_state.email_sponsor:
                 st.error("Er moet een geldig emailadres ingevuld worden.")
             elif len(st.session_state.product) == 0:
                 st.error("Er moet minstens 1 product opgegeven zijn in het formulier.")
@@ -110,10 +114,10 @@ def sponsor_item():
             else:
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 for item in range(1, len(st.session_state.product)+1):
-                    values = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
+                    values = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
                     gesponsord_ruw.append_row(values)
                 st.session_state["num_filters"] = 1
-                st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [naam_sponsor, email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
+                st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
                 st.rerun()
 
 # Bouw de app
