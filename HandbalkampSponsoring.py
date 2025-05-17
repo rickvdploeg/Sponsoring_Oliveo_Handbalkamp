@@ -120,7 +120,12 @@ def sponsor_item():
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 for item in range(1, len(st.session_state.product)+1):
                     values = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking, timestamp]
-                    gesponsord_ruw.append_row(values)
+                    try:
+                        gesponsord_ruw.append_row(values)
+                        st.toast(":green[**Succesvol opgeslagen**]")
+                    except:
+                        st.error("Er ging iets mis bij het opslaan. Probeer het later nog eens, of neem contact op met de kampleiding.")
+                        st.stop()
                 st.session_state["num_filters"] = 1
                 st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
                 st.rerun()
