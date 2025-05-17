@@ -2,7 +2,6 @@ import streamlit as st
 from google.oauth2.service_account import Credentials
 import gspread
 import pandas as pd
-import time
 import datetime
 from PIL import Image
 
@@ -24,9 +23,13 @@ credentials = Credentials.from_service_account_info(
 client = gspread.authorize(credentials)
 
 # Haal de boodschappenlijst op
-boodschappenlijst_ruw = client.open('Sponsoring').worksheet('Boodschappenlijst')
-boodschappenlijst = boodschappenlijst_ruw.get_all_values()
-boodschappenlijst_df = pd.DataFrame(boodschappenlijst[1:], columns=boodschappenlijst[0])
+@st.cache_data(ttl=600, show_spinner="Laden van boodschappenlijst...")
+def boodschappenlijst_laden():
+    boodschappenlijst_ruw = client.open('Sponsoring').worksheet('Boodschappenlijst')
+    boodschappenlijst = boodschappenlijst_ruw.get_all_values()
+    return pd.DataFrame(boodschappenlijst[1:], columns=boodschappenlijst[0])
+
+boodschappenlijst_df = boodschappenlijst_laden()
 
 # Haal de tot nu toe ingevulde sponsorlijst op
 gesponsord_ruw = client.open('Sponsoring').worksheet("Gesponsord")
