@@ -123,12 +123,13 @@ def sponsor_item():
                     try:
                         gesponsord_ruw.append_row(values)
                         st.toast(":green[**Succesvol opgeslagen**]")
+                        st.session_state.expander = True
                     except:
                         st.error("Er ging iets mis bij het opslaan. Probeer het later nog eens, of neem contact op met de kampleiding.")
                         st.stop()
                 st.session_state["num_filters"] = 1
                 st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
-                st.rerun()
+                #st.rerun()
 
 # Bouw de app
 
@@ -155,7 +156,6 @@ else:
         if st.button("Sponsor (nog) een product", type='primary'):
             sponsor_item()
         if len(st.session_state.gesponderde_producten) > 0:
-            st.session_state.expander = True
             st.success("Opgeslagen. Bedankt voor uw sponsoring! U kunt de knop hierboven nogmaals gebruiken om nog een ander product te sponsoren.")
             st.dataframe(st.session_state.gesponderde_producten, hide_index=True)
 
