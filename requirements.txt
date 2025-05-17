@@ -16,7 +16,7 @@ google-auth==2.40.1
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.2
 googleapis-common-protos==1.70.0
-gspread==6.2.1
+gspread
 gspread-dataframe
 gspread-formatting
 gspread-pandas
