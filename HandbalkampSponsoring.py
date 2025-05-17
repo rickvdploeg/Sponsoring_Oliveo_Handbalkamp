@@ -129,7 +129,7 @@ def sponsor_item():
                         st.stop()
                 st.session_state["num_filters"] = 1
                 st.session_state.gesponderde_producten.loc[len(st.session_state.gesponderde_producten.index)] = [st.session_state.naam_sponsor, st.session_state.email_sponsor, st.session_state.product[item], st.session_state.aantal[item], opmerking]
-                #st.rerun()
+                st.rerun()
 
 # Bouw de app
 
