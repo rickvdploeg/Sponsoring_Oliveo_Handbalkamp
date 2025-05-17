@@ -66,6 +66,8 @@ if 'naam_sponsor' not in st.session_state:
     st.session_state["naam_sponsor"] = ''
 if 'email_sponsor' not in st.session_state:
     st.session_state["email_sponsor"] = ''
+if 'expander' not in st.session_state:
+    st.session_state.expander = False
 
 
 def initialiseer_aantal():
@@ -142,12 +144,13 @@ st.title("Handbalkamp sponsoring")
 if boodschappenlijst_df.empty:
     st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
 else:
-    with st.expander("__Sponsor een product__"):
+    with st.expander("__Sponsor een product__", expanded=st.session_state.expander):
         st.write("Vul hier in wat u zou willen sponsoren. Er is een lijst aan boodschappen en aantalen die gewenst zijn. \
                 Mocht een product er niet meer tussen staan, of weinig aantallen, dan worden deze al gesponsord.")
         if st.button("Sponsor (nog) een product", type='primary'):
             sponsor_item()
         if len(st.session_state.gesponderde_producten) > 0:
+            st.session_state.expander = True
             st.success("Opgeslagen. Bedankt voor uw sponsoring! U kunt de knop hierboven nogmaals gebruiken om nog een ander product te sponsoren.")
             st.dataframe(st.session_state.gesponderde_producten, hide_index=True)
 
