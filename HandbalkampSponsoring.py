@@ -79,7 +79,7 @@ def update_aantal():
         st.session_state['max_value_{}'.format(i)] = boodschappenlijst_dict[st.session_state['product_{}'.format(i)]]
 
 
-@st.experimental_dialog("Vul het formulier in")
+@st.dialog("Vul het formulier in")
 def sponsor_item():
     st.session_state.naam_sponsor = st.text_input("*Voor- en achternaam kind", value=st.session_state.naam_sponsor)
     st.session_state.email_sponsor = st.text_input("*Emailadres ouder", value=st.session_state.email_sponsor)
@@ -136,17 +136,17 @@ st.markdown("""
 
 
 st.title("Handbalkamp sponsoring")
-#if boodschappenlijst_df.empty:
-st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
-# else:
-#     with st.expander("__Sponsor een product__"):
-#         st.write("Vul hier in wat u zou willen sponsoren. Er is een lijst aan boodschappen en aantalen die gewenst zijn. \
-#                 Mocht een product er niet meer tussen staan, of weinig aantallen, dan worden deze al gesponsord.")
-#         if st.button("Sponsor (nog) een product", type='primary'):
-#             sponsor_item()
-#         if len(st.session_state.gesponderde_producten) > 0:
-#             st.success("Opgeslagen. Bedankt voor uw sponsoring! U kunt de knop hierboven nogmaals gebruiken om nog een ander product te sponsoren.")
-#             st.dataframe(st.session_state.gesponderde_producten, hide_index=True)
+if boodschappenlijst_df.empty:
+    st.info("Alle gewenste producten worden al gesponsord. Bedankt voor alle bijdrages en u kunt nog wel geld doneren m.b.v. de QR-code.")
+else:
+    with st.expander("__Sponsor een product__"):
+        st.write("Vul hier in wat u zou willen sponsoren. Er is een lijst aan boodschappen en aantalen die gewenst zijn. \
+                Mocht een product er niet meer tussen staan, of weinig aantallen, dan worden deze al gesponsord.")
+        if st.button("Sponsor (nog) een product", type='primary'):
+            sponsor_item()
+        if len(st.session_state.gesponderde_producten) > 0:
+            st.success("Opgeslagen. Bedankt voor uw sponsoring! U kunt de knop hierboven nogmaals gebruiken om nog een ander product te sponsoren.")
+            st.dataframe(st.session_state.gesponderde_producten, hide_index=True)
 
 with st.expander("__Sponsor geld__", expanded=True):  
     st.markdown(f'''
